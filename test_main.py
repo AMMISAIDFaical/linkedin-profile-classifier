@@ -3,7 +3,7 @@ Test goes here
 
 """
 
-from mylib.calculator import add
+from src.third_party_bright_data import add
 
 
 def test_add():
