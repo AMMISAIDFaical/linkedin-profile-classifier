@@ -94,10 +94,6 @@ test_data["profile details"] = None
 
 for i, row in test_data.iterrows():
     profile_url = str(row.get("LinkedIn URL", "")).strip()  # adjust column name if different
-    if not profile_url or not profile_url.startswith("https"):
-        print(f"Skipping row {i}: invalid URL")
-        continue
-
     print(f"Scraping [{i+1}/{len(test_data)}]: {profile_url}")
     try:
         profile_data = scrape_profile(profile_url)
