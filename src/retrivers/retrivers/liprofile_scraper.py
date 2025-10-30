@@ -10,9 +10,10 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from dotenv import load_dotenv
+from selenium import webdriver
 
 # CONFIGURATION
-INPUT_CSV = "/Users/faicalammisaid/Documents/projects/inovexus/linkedin-profile-classifier/Test Data.csv"
+INPUT_CSV = "/workspaces/linkedin-profile-classifier/Test Data.csv"
 OUTPUT_DIR = Path("scrapes") / f"linkedin_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 OUTPUT_CSV = OUTPUT_DIR / "profiles_enriched.csv"
@@ -24,7 +25,7 @@ LINKEDIN_PASSWORD = os.getenv("LINKEDIN_PASSWORD")
 
 chrome_opts = Options()
 chrome_opts.add_argument("--start-maximized")
-# chrome_opts.add_argument("--headless=new")  # optional for silent scraping
+chrome_opts.add_argument("--headless=new")  # optional for silent scraping
 
 driver = webdriver.Chrome(options=chrome_opts)
 wait = WebDriverWait(driver, 15)

@@ -2,6 +2,7 @@ import requests
 import json
 import pandas as pd
 from dotenv import load_dotenv
+import os
 load_dotenv(override=True)
 
 BRIGHT_DATA_API_KEY = os.getenv("BRIGHT_DATA_API_KEY")
