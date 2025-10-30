@@ -1,153 +1,180 @@
 # LinkedIn Profile Classifier
 
-Classifies professional profiles into categories (for example role, seniority, industry) using supervised NLP. Designed to work only with user-provided or licensed text; does not fetch or scrape data from LinkedIn.
+An end-to-end workspace for classifying LinkedIn profiles into business-relevant categories. The repository contains two complementary parts:
 
-Quick start
-- python -m venv .venv && source .venv/bin/activate
-- pip install -U pip
-- pip install -r requirements.txt
-- make help (or see commands below) to train, evaluate, and serve
+- A simple classification script that uses a LangChain agent and Bright Data to fetch profile details and classify each profile into predefined categories.
+- (not finished yet) A LangGraph-based app (in `app/`) scaffolded for building richer agent workflows and running them locally via LangGraph Server/Studio.
 
-Goals
-- Accurate, auditable text classification with reproducible experiments
-- Fast local inference and simple API for integration
-- Clear data handling boundaries and privacy by default
 
-Features
-- Train with classic ML (scikit-learn) or transformer models (Hugging Face)
-- Evaluation with precision/recall/F1 and confusion matrix
-- CLI and FastAPI server for inference
-- Config-driven experiments (YAML) and tracked artifacts
-- Optional Docker image for portable deployment
+## What you can do with this repo
 
-Data and labeling
-- Input formats
-    - CSV: columns text,label
-    - JSONL: {"text": "...", "label": "..."}
-- Label examples (customize as needed): engineering, data, product, design, marketing, sales, operations, finance; junior, mid, senior, lead
-- Ethics and compliance
-    - Use only user-supplied or licensed text
-    - Remove PII that is not required for classification
-    - Respect the terms of any platform and local regulations
+- Classify LinkedIn profiles from a CSV and export results to a new CSV.
+- Experiment with agent workflows (nodes/edges) using LangGraph.
+- Extend the classification logic, data sources, and output schemas for production.
 
-Repository structure (proposed)
-- app/ FastAPI app and routing
-- linkedin_classifier/
-    - data/ loading, preprocessing, augmentation
-    - models/ wrappers for sklearn/transformers
-    - training/ train and evaluate loops
-    - utils/ metrics, logging, config
-    - cli.py CLI entrypoints
-- configs/ YAML experiment configs
-- tests/ unit and integration tests
-- scripts/ convenience scripts (prepare_data, train, evaluate, serve)
-- artifacts/ saved models, logs, reports (gitignored)
-- requirements.txt dependencies
-- pyproject.toml or setup.cfg tooling configuration
-- Dockerfile container build
-- .github/workflows/ci.yml CI pipeline
 
-Environment variables
-- MODEL_DIR path to trained model (default artifacts/models/latest)
-- MODEL_NAME HF model id if using transformers (for example distilbert-base-uncased)
-- DEVICE cpu or cuda
-- API_HOST 0.0.0.0
-- API_PORT 8000
+## Repository layout
 
-Training
-- Classical ML
-    - python -m linkedin_classifier.training.train --config configs/baseline_sklearn.yaml
-- Transformers
-    - python -m linkedin_classifier.training.train --config configs/baseline_transformer.yaml
-- Outputs
-    - artifacts/models/<run_id> model.bin or sklearn.pkl
-    - artifacts/reports/<run_id> metrics.json, confusion_matrix.png
-- Tips
-    - Stratify splits by label
-    - Use class weights or focal loss for imbalance
-    - Log seed and data snapshot for reproducibility
+```
+.
+├── src/
+│   ├── agent.py                    # Classification script (LangChain Agent + Bright Data)
+│   └── retrivers/
+│       └── third_party_bright_data.py  # Bright Data API client
+├── app/                            # LangGraph template app (server + studio)
+│   ├── src/agent/graph.py          # Example graph for LangGraph
+│   ├── tests/                      # Unit/integration tests for LangGraph app
+│   └── pyproject.toml              # App packaging and dev deps
+├── requirements.txt                # Root-level Python dependencies (script + dev)
+├── Makefile                        # Template make targets (root)
+├── .github/workflows/cicd.yml      # CI skeleton (uses the root Makefile)
+├── Dockerfile                      # Placeholder (not used for running the app)
+└── README.md                       # This file
+```
 
-Evaluation
-- python -m linkedin_classifier.training.evaluate --run-id <id>
-- Metrics reported: accuracy, macro/micro F1, per-class Precision/Recall, ROC-AUC (if applicable)
 
-Inference
-- CLI
-    - python -m linkedin_classifier.cli predict --model artifacts/models/latest "Senior data scientist building ML platforms"
-- Batch
-    - python -m linkedin_classifier.cli predict-file --input data/profiles.csv --text-col text --output artifacts/preds.csv
-- API (FastAPI)
-    - uvicorn app.main:app --host 0.0.0.0 --port 8000
-    - POST /predict body: {"text": "…"} returns {"label": "data", "scores": {"data": 0.92, ...}}
+## Prerequisites
 
-Preprocessing
-- Lowercasing and basic normalization (configurable)
-- Optional de-duplication and sentence trimming
-- Optional PII scrubbing (emails, phones) before training
+- Python 3.10+
+- A Bright Data API key (for profile scraping)
+- Access to an LLM endpoint via GitHub Models (or update the code to use a different provider)
+	- The script uses `ChatOpenAI` with `base_url=https://models.inference.ai.azure.com` and expects `GITHUB_TOKEN` for auth.
+- Optional: LangSmith account for tracing (can be disabled).
 
-Configuration (YAML)
-- data: paths, splits, text/label columns, preprocess options
-- model: type=sklearn|transformer, name, hyperparameters
-- train: epochs, batch_size, optimizer/lr, early_stopping, seed
-- eval: metrics, thresholds
-- output: directories, run_name, save_best_only
 
-Docker
-- docker build -t linkedin-profile-classifier .
-- docker run -p 8000:8000 -e MODEL_DIR=/models -v $(pwd)/artifacts/models/latest:/models linkedin-profile-classifier
+## Quick start (classification script)
 
-Testing and quality
-- pytest -q unit tests
-- ruff check . linting
-- black . formatting
-- mypy . type checks (optional)
-- pre-commit hooks recommended
+1) Create and activate a virtual environment and install dependencies.
 
-Performance notes
-- Use DistilBERT or MiniLM for low-latency CPU inference
-- Enable TorchScript or ONNX Runtime for transformers
-- Cache tokenizer and model; batch requests on server
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+```
 
-Security and privacy
-- Do not store raw profiles unless necessary; prefer hashed IDs
-- Keep training data and artifacts out of the repo (use .gitignore)
-- Review model outputs for bias; include a model card in artifacts/reports
+2) Configure environment variables. Copy the example file and fill in values.
 
-Roadmap
-- Semi-supervised learning with weak labels
-- Active learning loop for annotator efficiency
-- Multi-label support (for example role and seniority jointly)
-- Simple web UI for batch uploads and review
+```bash
+cp .env.example .env
+```
 
-Contributing
-- Open an issue to discuss significant changes
-- Fork and create a feature branch
-- Add tests and docs; run lint and tests locally
-- Submit a pull request with a clear description
+Required variables for the script in `src/agent.py`:
 
-License
-- MIT (update if different)
+- `GITHUB_TOKEN`: token for GitHub Models inference endpoint.
+- `BRIGHT_DATA_API_KEY`: key for Bright Data datasets API.
+- Optional LangSmith variables if you want tracing: `LANGSMITH_TRACING`, `LANGSMITH_ENDPOINT`, `LANGSMITH_API_KEY`, `LANGSMITH_PROJECT`.
 
-Acknowledgements
-- scikit-learn, Hugging Face Transformers, FastAPI, Uvicorn
+3) Prepare input data. By default the script reads `src/data/Test Data.csv` and expects at least:
 
-Appendix: example requirements.txt
-- fastapi
-- uvicorn
-- scikit-learn
-- pandas
-- numpy
-- pydantic
-- transformers
-- torch
-- evaluate
-- matplotlib
-- pyyaml
-- ruff
-- black
-- pytest
-- mypy
-- python-dotenv
-- typer
-- onnxruntime (optional)
-- torchmetrics (optional)
+- `LinkedIn URL`
+- `First Name`
+
+4) Run the classifier.
+
+```bash
+python src/agent.py
+```
+
+Output: a file named `Test Data - Classified.csv` at the repository root with a new "Profile Type" column.
+
+Notes:
+
+- The scraper currently sleeps ~40s per profile to accommodate Bright Data processing. Start with a small sample to validate.
+- The script uses an absolute path for the input CSV inside the dev container. If running outside the dev container, adjust paths as needed in `src/agent.py`.
+
+
+## LangGraph app (optional, for building richer agents)
+
+The `app/` directory is a LangGraph template you can run locally with hot reload and LangGraph Studio.
+
+```bash
+cd app
+pip install -e . "langgraph-cli[inmem]"
+langgraph dev
+```
+
+Then open the Studio UI as prompted. The example graph is defined in `app/src/agent/graph.py`. Unit and integration tests live under `app/tests/`.
+
+
+## Configuration
+
+See `docs/CONFIGURATION.md` for a complete list and guidance. The most important variables are:
+
+- `GITHUB_TOKEN` (required): auth for ChatOpenAI when `base_url` is set to GitHub Models.
+- `GITHUB_MODEL` (optional): model name used by the agent. Falls back to a sensible default.
+- `BRIGHT_DATA_API_KEY` (required): API key for Bright Data datasets.
+- `LANGSMITH_*` (optional): enable tracing in development.
+
+An example file is provided in `.env.example`. The repo's `.gitignore` already excludes `.env`.
+
+
+## How it works
+
+At a high level:
+
+1. The agent receives a LinkedIn profile URL.
+2. It calls the `get_profile_details_by_name` tool (a wrapper around Bright Data dataset API) once.
+3. The LLM classifies the profile into one of the categories:
+	 - Exited Entrepreneur
+	 - Serial Business Angel
+	 - Top Mentor
+	 - Big Tech C-level
+	 - Board Member / Private Investor
+	 - Ex-Consulting
+4. Results are written to a CSV.
+
+The tool implementation is in `src/retrivers/third_party_bright_data.py`.
+
+
+## Testing
+
+There are two testing contexts:
+
+- LangGraph app tests: run from the `app/` directory
+
+	```bash
+	cd app
+	make test
+	```
+
+- Root-level tests (template): provided as placeholders and may not reflect the current code structure. Focus on the `app/` tests for actionable validation.
+
+
+## CI/CD
+
+The repo includes a basic GitHub Actions workflow at `.github/workflows/cicd.yml` that runs the targets in the root `Makefile`. You may want to adapt it to use the `app/` Makefile or update the root tests before enabling required checks.
+
+If you use CI with external services (LLMs/Bright Data), configure repository/environment secrets in GitHub Actions and do not rely on `.env` files.
+
+
+## Security and compliance
+
+- Secrets management: Never commit real secrets to the repository. Use `.env` locally and GitHub Actions secrets in CI. If secrets were committed in the past, rotate them immediately.
+- Data privacy and terms: Respect LinkedIn/Bright Data terms of service, applicable laws, and internal policies. Only process data you are authorized to process.
+- Network and rate limits: Bright Data calls are synchronous and may be slow under load. Add retries/backoff and monitoring before production use.
+
+See `docs/SECURITY.md` for detailed guidance.
+
+
+## Troubleshooting
+
+- Bright Data returns empty or slow responses: verify `BRIGHT_DATA_API_KEY`, dataset configuration, and allow sufficient processing time.
+- LLM errors (401/403/429): ensure `GITHUB_TOKEN` is set and your account has access to GitHub Models. Consider setting `GITHUB_MODEL` to a permitted model.
+- File path issues: adjust the CSV path in `src/agent.py` if you're not running inside the dev container.
+
+See `docs/TROUBLESHOOTING.md` for more.
+
+
+## Roadmap / Next steps
+
+- Parameterize input/output paths and remove absolute paths.
+- Replace blocking sleep with a polling mechanism or webhooks for Bright Data results.
+- Add robust unit/integration tests at root level to replace placeholders.
+- Add observability (LangSmith), structured logs, and retries around network calls.
+
+
+## License
+
+This project is licensed under the MIT License. See `LICENSE` for details.
+
