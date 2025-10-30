@@ -36,11 +36,11 @@ The classifier identifies the following profile types:
 linkedin-profile-classifier/
 ├── app/                      # LangGraph application
 │   ├── src/agent/           # Agent graph implementation
-│   ├── retrivers/           # LinkedIn data retrieval modules
+│   ├── retrievers/          # LinkedIn data retrieval modules
 │   └── tests/               # Unit and integration tests
 ├── src/                     # Source code
 │   ├── agent.py            # Main classification agent
-│   ├── retrivers/          # LinkedIn scraping utilities
+│   ├── retrievers/          # LinkedIn scraping utilities
 │   └── data/               # Test data files
 ├── main.py                 # CLI entry point
 ├── requirements.txt        # Python dependencies
@@ -73,10 +73,10 @@ pip install -r requirements.txt
 
 3. Set up environment variables:
 ```bash
-cp app/.env.example .env
+cp app/.env.example app/.env
 ```
 
-Edit `.env` and add your API keys:
+Edit `app/.env` and add your API keys:
 ```env
 GITHUB_TOKEN=your_github_token_here
 BRIGHT_DATA_API_KEY=your_bright_data_api_key_here
@@ -91,6 +91,7 @@ LANGSMITH_PROJECT=your_project_name
 Run the classification agent on test data:
 
 ```bash
+cd /workspaces/linkedin-profile-classifier
 python src/agent.py
 ```
 
@@ -100,13 +101,17 @@ This will:
 3. Classify each profile using GPT-4
 4. Save results to `Test Data - Classified.csv`
 
+**Note:** The agent expects to be run from the `/workspaces/linkedin-profile-classifier` directory or you may need to adjust the file paths in `src/agent.py` to match your setup.
+
 ### CLI Usage
 
-Use the command-line interface:
+The project includes a simple CLI example:
 
 ```bash
 python main.py add 5 10
 ```
+
+This demonstrates the basic CLI structure using Click.
 
 ### Using LangGraph Server
 
@@ -144,7 +149,7 @@ cd app && make test
 cd app && make integration_tests
 
 # Run tests with coverage
-python -m pytest -vv --cov=main --cov=mylib test_*.py
+python -m pytest -vv --cov=main --cov=src test_*.py
 ```
 
 ## 🔧 Development
@@ -168,7 +173,7 @@ make refactor
 
 - **`src/agent.py`**: Main classification logic for batch processing
 - **`app/src/agent/graph.py`**: LangGraph agent implementation
-- **`src/retrivers/`**: LinkedIn profile scraping modules
+- **`src/retrievers/`**: LinkedIn profile scraping modules
 - **`main.py`**: Command-line interface
 
 ## 🐳 Docker
