@@ -15,7 +15,7 @@ headers = {
 }
 
 def get_details(url):
-    time.sleep(40)
+    time.sleep(30)
     data = json.dumps({
         "input": [{"url": url}],
     })
