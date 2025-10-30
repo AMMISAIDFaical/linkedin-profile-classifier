@@ -36,11 +36,11 @@ The classifier identifies the following profile types:
 linkedin-profile-classifier/
 ├── app/                      # LangGraph application
 │   ├── src/agent/           # Agent graph implementation
-│   ├── retrievers/          # LinkedIn data retrieval modules
+│   ├── retrivers/           # LinkedIn data retrieval modules
 │   └── tests/               # Unit and integration tests
 ├── src/                     # Source code
 │   ├── agent.py            # Main classification agent
-│   ├── retrievers/          # LinkedIn scraping utilities
+│   ├── retrivers/          # LinkedIn scraping utilities
 │   └── data/               # Test data files
 ├── main.py                 # CLI entry point
 ├── requirements.txt        # Python dependencies
@@ -173,7 +173,7 @@ make refactor
 
 - **`src/agent.py`**: Main classification logic for batch processing
 - **`app/src/agent/graph.py`**: LangGraph agent implementation
-- **`src/retrievers/`**: LinkedIn profile scraping modules
+- **`src/retrivers/`**: LinkedIn profile scraping modules
 - **`main.py`**: Command-line interface
 
 ## 🐳 Docker
