@@ -2,8 +2,8 @@ from time import time
 import requests
 from dotenv import load_dotenv
 import os
-import urllib.request
 import json
+import time
 
 load_dotenv(override=True)
 
@@ -14,9 +14,8 @@ headers = {
     "Content-Type": "application/json",
 }
 
-
 def get_details(url):
-    time.sleep(10)
+    time.sleep(40)
     data = json.dumps({
         "input": [{"url": url}],
     })
