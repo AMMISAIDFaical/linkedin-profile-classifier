@@ -178,3 +178,19 @@ See `docs/TROUBLESHOOTING.md` for more.
 
 This project is licensed under the MIT License. See `LICENSE` for details.
 
+
+# 1️⃣ Check which files you changed
+
+# 2️⃣ Add your changes
+
+# 3️⃣ Commit your work
+git commit -m "your message here"
+
+# 4️⃣ Switch to main branch
+git checkout main
+
+# 5️⃣ Merge the Copilot branch into main
+git merge copilot/vscode1761835629820
+
+# 6️⃣ Push main to GitHub
+git push origin main
