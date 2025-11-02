@@ -20,8 +20,9 @@ An end-to-end workspace for classifying LinkedIn profiles into business-relevant
 
 ├── app/
 │   ├── src/├── agent.py # Example graph for LangGraph
-│           └── data── retrivers├
-│                               └── third_party_bright_data.py  # Bright Data API client          
+│           └── data──├ Test Data.csv
+│           └──retrivers├liprofile_scraper.py
+│                       │third_party_bright_data.py  # Bright Data API client          
 │   ├── tests/                      # Unit/integration tests for LangGraph app
 │   └── pyproject.toml              # App packaging and dev deps
 ├── requirements.txt                # Root-level Python dependencies (script + dev)
