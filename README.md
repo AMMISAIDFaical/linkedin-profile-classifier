@@ -17,12 +17,11 @@ An end-to-end workspace for classifying LinkedIn profiles into business-relevant
 
 ```
 .
-├── src/
-│   ├── agent.py                    # Classification script (LangChain Agent + Bright Data)
-│   └── retrivers/
-│       └── third_party_bright_data.py  # Bright Data API client
-├── app/                            # LangGraph template app (server + studio)
-│   ├── src/agent/graph.py          # Example graph for LangGraph
+
+├── app/
+│   ├── src/├── agent.py # Example graph for LangGraph
+│           └── data── retrivers├
+│                               └── third_party_bright_data.py  # Bright Data API client          
 │   ├── tests/                      # Unit/integration tests for LangGraph app
 │   └── pyproject.toml              # App packaging and dev deps
 ├── requirements.txt                # Root-level Python dependencies (script + dev)
