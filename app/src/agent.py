@@ -19,7 +19,7 @@ model = ChatOpenAI(
 )
 
 # === Load dataset ===
-df = pd.read_csv("/workspaces/linkedin-profile-classifier/src/data/Test Data.csv")
+df = pd.read_csv("/workspaces/linkedin-profile-classifier/app/src/data/TestData.csv")
 
 # === Define tool ===
 @tool
@@ -109,4 +109,3 @@ for idx, row in df.iterrows():
 # === Save results ===
 df.to_csv("/workspaces/linkedin-profile-classifier/TestData-Classified.csv", index=False)
 print("\n Classification complete. Saved to 'Test Data-Classified.csv'.")
-
