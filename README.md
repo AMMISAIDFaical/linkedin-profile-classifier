@@ -1,5 +1,3 @@
-<img width="1369" height="401" alt="image" src="https://github.com/user-attachments/assets/aeca89f6-a303-461e-94fd-83e9931320be" />
-
 # LinkedIn Profile Classifier
 
 An end-to-end workspace for classifying LinkedIn profiles into business-relevant categories. The repository contains two complementary parts:
